@@ -1132,6 +1132,85 @@
     </section>
 
     <!-- ==========================================
+         SLIDE 12B: FULL METRICS - CONSISTENCY ACROSS DATASETS
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-12b">
+        <div class="slide-content">
+            <p class="section-label reveal">The Full Picture</p>
+            <h2 class="reveal reveal-delay-1">Hybrid: Most <span class="gradient-text">Consistent</span> Across Datasets</h2>
+
+            <div class="reveal reveal-delay-2" style="width:100%;max-width:950px;margin:0 auto;margin-top:var(--content-gap);">
+                <table style="width:100%;border-collapse:collapse;font-size:clamp(0.6rem,1.1vw,0.9rem);">
+                    <thead>
+                        <tr style="border-bottom:2px solid rgba(124,92,252,0.4);">
+                            <th style="text-align:left;padding:clamp(0.25rem,0.6vw,0.5rem);color:var(--text-muted);font-weight:500;">Approach</th>
+                            <th style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:var(--text-muted);font-weight:500;">Custom<br><span style="font-size:0.75em;opacity:0.7;">64 pairs, Spearman</span></th>
+                            <th style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:var(--text-muted);font-weight:500;">HuggingFace<br><span style="font-size:0.75em;opacity:0.7;">200 pairs, Spearman</span></th>
+                            <th style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:var(--text-muted);font-weight:500;">batuhanmtl<br><span style="font-size:0.75em;opacity:0.7;">300 pairs, Spearman</span></th>
+                            <th style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:var(--text-muted);font-weight:500;">Worst<br>Rank</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(124,92,252,0.08);">
+                            <td style="padding:clamp(0.25rem,0.6vw,0.5rem);color:var(--accent);font-weight:600;">Hybrid (ours)</td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#4ecdc4;">0.811 <span style="font-size:0.75em;color:var(--text-muted);">#2</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#4ecdc4;font-weight:600;">0.328 <span style="font-size:0.75em;color:var(--accent);">#1</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#4ecdc4;">0.575 <span style="font-size:0.75em;color:var(--text-muted);">#2</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:var(--accent);font-weight:700;font-size:clamp(0.75rem,1.3vw,1.1rem);">#2</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.25rem,0.6vw,0.5rem);">TF-IDF Only</td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#4ecdc4;font-weight:600;">0.851 <span style="font-size:0.75em;color:var(--accent);">#1</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;">0.183 <span style="font-size:0.75em;color:#ff6b6b;">#4</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#4ecdc4;font-weight:600;">0.593 <span style="font-size:0.75em;color:var(--accent);">#1</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;font-weight:700;font-size:clamp(0.75rem,1.3vw,1.1rem);">#4</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.25rem,0.6vw,0.5rem);">Text Signals</td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);">0.812 <span style="font-size:0.75em;color:var(--text-muted);">#3</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);">0.285 <span style="font-size:0.75em;color:var(--text-muted);">#3</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);">0.566 <span style="font-size:0.75em;color:var(--text-muted);">#3</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);font-weight:700;font-size:clamp(0.75rem,1.3vw,1.1rem);">#3</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.25rem,0.6vw,0.5rem);">Embedding Only</td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;">0.712 <span style="font-size:0.75em;color:#ff6b6b;">#5</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#4ecdc4;font-weight:600;">0.329 <span style="font-size:0.75em;color:var(--accent);">#1</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;">0.471 <span style="font-size:0.75em;color:#ff6b6b;">#4</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;font-weight:700;font-size:clamp(0.75rem,1.3vw,1.1rem);">#5</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:clamp(0.25rem,0.6vw,0.5rem);">Structured Only</td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;">0.307 <span style="font-size:0.75em;color:#ff6b6b;">#6</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;">-0.032 <span style="font-size:0.75em;color:#ff6b6b;">#5</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;">0.054 <span style="font-size:0.75em;color:#ff6b6b;">#5</span></td>
+                            <td style="text-align:center;padding:clamp(0.25rem,0.6vw,0.5rem);color:#ff6b6b;font-weight:700;font-size:clamp(0.75rem,1.3vw,1.1rem);">#6</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="reveal reveal-delay-3" style="display:flex;gap:clamp(0.5rem,1.5vw,1.5rem);justify-content:center;margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div style="background:rgba(124,92,252,0.1);border:1px solid rgba(124,92,252,0.2);border-radius:8px;padding:clamp(0.4rem,0.8vw,0.7rem) clamp(0.6rem,1.2vw,1.2rem);text-align:center;">
+                    <span style="font-size:var(--small-size);color:var(--text-muted);">TF-IDF worst</span><br>
+                    <span style="font-size:clamp(0.9rem,1.5vw,1.3rem);color:#ff6b6b;font-weight:700;">#4</span>
+                    <span style="font-size:var(--tiny-size);color:var(--text-muted);display:block;">crashes on diverse roles</span>
+                </div>
+                <div style="background:rgba(124,92,252,0.1);border:1px solid rgba(124,92,252,0.2);border-radius:8px;padding:clamp(0.4rem,0.8vw,0.7rem) clamp(0.6rem,1.2vw,1.2rem);text-align:center;">
+                    <span style="font-size:var(--small-size);color:var(--text-muted);">Embedding worst</span><br>
+                    <span style="font-size:clamp(0.9rem,1.5vw,1.3rem);color:#ff6b6b;font-weight:700;">#5</span>
+                    <span style="font-size:var(--tiny-size);color:var(--text-muted);display:block;">fails on keyword-heavy JDs</span>
+                </div>
+                <div style="background:rgba(78,205,196,0.08);border:1px solid rgba(78,205,196,0.25);border-radius:8px;padding:clamp(0.4rem,0.8vw,0.7rem) clamp(0.6rem,1.2vw,1.2rem);text-align:center;">
+                    <span style="font-size:var(--small-size);color:var(--text-muted);">Hybrid worst</span><br>
+                    <span style="font-size:clamp(0.9rem,1.5vw,1.3rem);color:var(--accent);font-weight:700;">#2</span>
+                    <span style="font-size:var(--tiny-size);color:var(--accent);display:block;">never below second place</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
          SLIDE 13: ABLATION
          ========================================== -->
     <section class="slide bg-gradient bg-grid" id="slide-13">
