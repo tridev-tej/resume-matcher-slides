@@ -632,6 +632,74 @@
             background: rgba(124, 92, 252, 0.1);
             border: 1px solid var(--border-color);
         }
+
+        /* =========================================
+           Q&A TOOLTIP - Speaker notes per slide
+           Click the ? icon to reveal anticipated TL question + answer
+           ========================================= */
+        .qa-toggle {
+            position: absolute;
+            bottom: clamp(12px, 2vh, 24px);
+            left: clamp(12px, 2vw, 24px);
+            width: clamp(24px, 2.5vw, 32px);
+            height: clamp(24px, 2.5vw, 32px);
+            border-radius: 50%;
+            background: rgba(124, 92, 252, 0.15);
+            border: 1px solid rgba(124, 92, 252, 0.3);
+            color: var(--accent);
+            font-size: clamp(0.65rem, 1vw, 0.85rem);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 50;
+            transition: all 0.3s ease;
+            font-family: var(--font-body);
+        }
+        .qa-toggle:hover {
+            background: rgba(124, 92, 252, 0.3);
+            transform: scale(1.1);
+        }
+        .qa-panel {
+            position: absolute;
+            bottom: clamp(44px, 5vh, 64px);
+            left: clamp(12px, 2vw, 24px);
+            max-width: min(500px, 60vw);
+            background: rgba(10, 15, 28, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(124, 92, 252, 0.25);
+            border-radius: 10px;
+            padding: clamp(0.6rem, 1.2vw, 1rem);
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px);
+            transition: all 0.3s ease;
+        }
+        .qa-panel.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .qa-panel .qa-q {
+            font-size: clamp(0.6rem, 0.95vw, 0.8rem);
+            color: var(--accent-3);
+            font-weight: 600;
+            margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+            line-height: 1.4;
+        }
+        .qa-panel .qa-a {
+            font-size: clamp(0.55rem, 0.85vw, 0.75rem);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .qa-panel .qa-a strong {
+            color: var(--accent);
+        }
+        @media (max-height: 600px) {
+            .qa-toggle, .qa-panel { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -1675,9 +1743,123 @@
         }
     }
 
+    // =========================================
+    // Q&A TOOLTIPS - Anticipated TL questions per slide
+    // Click the ? icon on any slide to see the most likely
+    // hardball question and a prepared answer.
+    // =========================================
+    const QA_DATA = {
+        'slide-2': {
+            q: "The 58% stat implies keyword bias, but couldn't the top 3 resumes just be genuinely better?",
+            a: "Can't fully disentangle recruiter skill from bias - that's a known confound. The system's value is scoring <strong>all 250 candidates</strong> in under a second with consistent criteria, removing the operational constraint that forces recruiters to stop at candidate 3."
+        },
+        'slide-3': {
+            q: "Resumes can be 1000+ tokens. How does all-MiniLM-L6-v2 handle that given its 256-token limit?",
+            a: "Real truncation risk - MiniLM has a 256-token sequence limit and silently truncates. Current impl passes full text without chunking. Fix: <strong>mean-pooling over 256-token chunks</strong>. Known limitation, disclosed in limitations slide."
+        },
+        'slide-4': {
+            q: "If TF-IDF and embeddings both fail on the same resume, doesn't the weighted average just average two wrong signals?",
+            a: "Yes, signal correlation is a genuine risk. The <strong>ablation study</strong> measures exactly this. The weight optimizer (differential evolution) implicitly down-weights redundant signals - e.g., skills_overlap ends up at 0.0 weight because skills_semantic and tfidf already cover that space."
+        },
+        'slide-5': {
+            q: "Experience scoring uses Jobvite 2023 thresholds - that's a vendor report, not peer-reviewed. Why trust those?",
+            a: "They're <strong>defensible heuristics, not ground truth</strong>. The real validation is empirical: dropping experience causes measurable nDCG drop on the real-world dataset. The breakpoints are tunable and avoid the failure mode of hard cutoffs."
+        },
+        'slide-6': {
+            q: "If most signals are None for a sparse resume, the penalty floor is 0.7. Why not let it go lower with only one signal?",
+            a: "Conservative product decision: a single strong semantic match should still produce a meaningful score, not get discounted to near-zero. The floor is <strong>configurable via feature flag</strong> - the right value depends on whether false negatives or false positives are costlier."
+        },
+        'slide-7': {
+            q: "What's the empirical evidence that structured weights outperform semantic on credential-heavy JDs?",
+            a: "Honest answer: <strong>it's a hypothesis, not yet validated</strong>. Cross-domain data shows semantic (0.575) beats structured (0.138) broadly. The auto-selection is a reasonable heuristic but needs a controlled experiment on credential-heavy JDs specifically. Default is semantic for good reason."
+        },
+        'slide-8': {
+            q: "Why MiniLM over BGE-large or E5-large given you're already calling Claude anyway?",
+            a: "MiniLM at 22M params: <strong>~50ms/resume on CPU</strong>. BGE-large adds 300-400ms with marginal nDCG gain that gets swamped by the other 6 signals. Claude is cached and only fires for top-3 explanations - not on the scoring hot path."
+        },
+        'slide-9': {
+            q: "What stops a sophisticated candidate from stuffing exactly 40 highly-targeted skills instead of 200 generic ones?",
+            a: "The cap alone doesn't. The defense is <strong>multi-signal architecture</strong>: 40 perfectly-matched keywords scores high on TF-IDF but semantic coherence, experience alignment, and education signals independently validate whether those skills appear in plausible context."
+        },
+        'slide-10': {
+            q: "44 synthetic resumes, single annotator - how do you know 0.992 nDCG isn't just overfitting to your own generation process?",
+            a: "That's the core validity threat. The honest answer: <strong>cross-domain validation</strong> on batuhanmtl (300 real samples) and HuggingFace (200 pairs) shows Spearman 0.513-0.771 range. Those are the numbers worth quoting, not 0.992."
+        },
+        'slide-11': {
+            q: "If the value proposition is explainability, not ranking accuracy, how do you justify the added complexity to a team that only cares about ranking?",
+            a: "Production failures in ATS aren't about ranking accuracy on clean data - they're about <strong>adversarial inputs, legal exposure, and auditable decisions</strong>. None captured by nDCG. TF-IDF has zero defense against keyword stuffing and zero explainability for compliance."
+        },
+        'slide-12': {
+            q: "Healthcare Spearman is 0.513 - barely above random for a safety-critical domain. Why should anyone trust this for healthcare roles?",
+            a: "Healthcare JDs are dense with credentialing abbreviations (RN, ACLS, BLS, ICD-10) outside MiniLM's training distribution. <strong>Needs domain-specific skills ontology</strong> before it's production-ready for that vertical. Honest limitation."
+        },
+        'slide-12b': {
+            q: "Isn't cherry-picking the metric where hybrid looks best exactly what you'd expect from a system tuned on that metric?",
+            a: "Valid concern - weights were learned to optimize ranking, so nDCG isn't independent. The more honest robustness claim comes from <strong>per-category Spearman variance</strong>, which shows where the system actually degrades."
+        },
+        'slide-13': {
+            q: "If dropping experience/education improves nDCG, why keep them at all?",
+            a: "Ablation uses <strong>semantic weights</strong> where those signals get near-zero weight anyway. On the structured profile, they contribute positively. They're also architecturally necessary for <strong>fairness and explainability layers</strong> which require independent structured signals."
+        },
+        'slide-14': {
+            q: "Gender inference from names using gender-guesser is unreliable for non-Western names and legally problematic. How is this a selling point?",
+            a: "It isn't the selling point - the <strong>four-fifths rule check and swap reranking logic</strong> are the right production patterns. The demographic proxy (name-based) is a placeholder that must be replaced with self-declared EEO fields before real deployment. Architecture is right; signal is a placeholder."
+        },
+        'slide-15': {
+            q: "How does the system handle multi-column PDFs, scanned text, or non-standard section headers like 'Professional History'?",
+            a: "PyMuPDF collapses multi-column layouts. Unrecognized headers fall back to <strong>full-text extraction</strong> - skills still work but experience year extraction degrades. The date-range fallback parser runs on full text and merges overlapping intervals, partially recovering."
+        },
+        'slide-16': {
+            q: "Your own results.md says 'single annotator, self-consistency check pending.' How is 0.992 meaningful at all?",
+            a: "Largely it isn't for absolute claims. More honest metrics: <strong>Weighted F1 of 0.208, Precision@5 of 0.286</strong>. The high nDCG is partly an artifact of small group sizes (12 JDs with ~5 resumes each) making ranking trivially easy. Production needs 50+ JDs x 50+ resumes, 3 annotators."
+        },
+        'slide-17': {
+            q: "Phase 2 says FAISS/Qdrant for 100K resumes, but your pipeline recomputes embeddings fresh every request. How long would 100K actually take?",
+            a: "~83 minutes at 50ms/resume with no parallelism. Moving to FAISS/Qdrant requires <strong>pre-embedding at index time</strong>, querying only the JD at search time. That's a real architectural change - multi-signal becomes a two-stage operation: semantic pre-filter, then structured rerank top-K."
+        },
+        'slide-18': {
+            q: "You claim p95 ~50ms but Claude explanation adds 1-3 seconds. How is that 50ms?",
+            a: "<strong>50ms is scoring-only.</strong> LLM explanation has a 10s timeout and runs separately, cached via SHA-256 hash. Cold latency includes LLM round-trip. Should say '~50ms scoring; explanation adds 1-3s first-call, cached thereafter.'"
+        },
+        'slide-19': {
+            q: "You say 'production-ready' but fairness uses name-based gender guessing, which could expose you to liability under NYC Local Law 144.",
+            a: "The four-fifths rule check and swap reranking are the <strong>correct production patterns</strong>. The demographic proxy must be replaced with self-declared attributes before deployment. Architecture is production-grade; the demographic signal is a placeholder explicitly caveated in the code."
+        }
+    };
+
+    function initQATooltips() {
+        Object.entries(QA_DATA).forEach(([slideId, data]) => {
+            const slide = document.getElementById(slideId);
+            if (!slide) return;
+
+            const toggle = document.createElement('div');
+            toggle.className = 'qa-toggle';
+            toggle.textContent = '?';
+            toggle.title = 'Anticipated TL question';
+
+            const panel = document.createElement('div');
+            panel.className = 'qa-panel';
+            panel.innerHTML = `<div class="qa-q">TL: "${data.q}"</div><div class="qa-a">${data.a}</div>`;
+
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                panel.classList.toggle('visible');
+            });
+
+            // Close when clicking elsewhere on the slide
+            slide.addEventListener('click', () => {
+                panel.classList.remove('visible');
+            });
+
+            slide.appendChild(toggle);
+            slide.appendChild(panel);
+        });
+    }
+
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
         new SlidePresentation();
+        initQATooltips();
     });
     </script>
 
