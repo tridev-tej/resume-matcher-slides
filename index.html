@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Matcher — Client Presentation</title>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
+
+    <style>
+        /* ===========================================
+           THEME — Edit these to change the entire look
+           =========================================== */
+        :root {
+            --bg-primary: #06070d;
+            --bg-secondary: #0d0f1a;
+            --bg-card: rgba(15, 18, 35, 0.7);
+            --text-primary: #e8eaf0;
+            --text-secondary: #7a7f9a;
+            --text-muted: #4a4f6a;
+            --accent: #7c5cfc;
+            --accent-2: #4ecdc4;
+            --accent-3: #ff6b9d;
+            --accent-glow: rgba(124, 92, 252, 0.35);
+            --accent-glow-2: rgba(78, 205, 196, 0.25);
+            --gradient-1: linear-gradient(135deg, #7c5cfc, #4ecdc4);
+            --gradient-2: linear-gradient(135deg, #7c5cfc, #ff6b9d);
+            --gradient-3: linear-gradient(135deg, #4ecdc4, #7c5cfc);
+            --border-color: rgba(124, 92, 252, 0.15);
+            --border-glow: rgba(124, 92, 252, 0.3);
+
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+
+            --title-size: clamp(2rem, 5.5vw, 4.5rem);
+            --h2-size: clamp(1.4rem, 3.5vw, 2.8rem);
+            --h3-size: clamp(1rem, 2vw, 1.4rem);
+            --body-size: clamp(0.72rem, 1.2vw, 1rem);
+            --small-size: clamp(0.62rem, 0.9vw, 0.82rem);
+            --tiny-size: clamp(0.55rem, 0.75vw, 0.72rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4.5rem);
+            --content-gap: clamp(0.6rem, 1.8vw, 1.8rem);
+            --element-gap: clamp(0.3rem, 0.8vw, 0.7rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration: 0.6s;
+        }
+
+        /* ===========================================
+           BASE
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===========================================
+           SLIDES — Each = exactly one viewport
+           =========================================== */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            max-width: min(95vw, 1200px);
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        h1 {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+            margin-bottom: var(--content-gap);
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        p, li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-text-2 {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .accent { color: var(--accent); }
+        .accent-2 { color: var(--accent-2); }
+        .accent-3 { color: var(--accent-3); }
+
+        /* ===========================================
+           COMPONENTS
+           =========================================== */
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: clamp(0.8rem, 1.5vw, 1.4rem);
+            backdrop-filter: blur(10px);
+        }
+
+        .glass-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        /* Tags / Badges */
+        .tag {
+            display: inline-block;
+            padding: 0.2em 0.7em;
+            border-radius: 20px;
+            font-size: var(--tiny-size);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid var(--border-color);
+            color: var(--accent);
+        }
+
+        .tag-green { color: var(--accent-2); border-color: rgba(78,205,196,0.3); }
+        .tag-pink { color: var(--accent-3); border-color: rgba(255,107,157,0.3); }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: var(--small-size);
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: clamp(0.3rem, 0.6vw, 0.6rem) clamp(0.5rem, 1vw, 1rem);
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: var(--tiny-size);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: clamp(0.3rem, 0.5vw, 0.5rem) clamp(0.5rem, 1vw, 1rem);
+            border-bottom: 1px solid rgba(124, 92, 252, 0.06);
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:hover td { background: rgba(124, 92, 252, 0.04); }
+        .data-table .highlight td { color: var(--text-primary); font-weight: 600; }
+        .data-table .highlight td:first-child { color: var(--accent); }
+
+        /* Metric Boxes */
+        .metric-box {
+            text-align: center;
+            padding: clamp(0.8rem, 1.5vw, 1.5rem);
+        }
+
+        .metric-value {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 4vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .metric-label {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            margin-top: 0.3em;
+        }
+
+        .metric-detail {
+            font-size: var(--tiny-size);
+            color: var(--text-muted);
+            margin-top: 0.15em;
+        }
+
+        /* Grid layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--element-gap); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--element-gap); }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--element-gap); }
+
+        @media (max-width: 700px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+
+        /* Pipeline flow */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.3rem, 0.8vw, 0.8rem);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .pipeline-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: clamp(0.4rem, 0.8vw, 0.8rem) clamp(0.6rem, 1.2vw, 1.2rem);
+            font-size: var(--small-size);
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .pipeline-step.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .pipeline-arrow {
+            color: var(--text-muted);
+            font-size: var(--body-size);
+        }
+
+        /* Bar chart */
+        .bar-chart { display: flex; flex-direction: column; gap: clamp(0.25rem, 0.5vh, 0.5rem); }
+
+        .bar-row {
+            display: grid;
+            grid-template-columns: clamp(80px, 12vw, 140px) 1fr clamp(40px, 5vw, 60px);
+            align-items: center;
+            gap: clamp(0.3rem, 0.6vw, 0.6rem);
+        }
+
+        .bar-label {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .bar-track {
+            height: clamp(16px, 2vh, 24px);
+            background: rgba(124, 92, 252, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1.2s var(--ease-out-expo);
+            width: 0;
+        }
+
+        .bar-val {
+            font-size: var(--small-size);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: var(--font-display);
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: rgba(10, 12, 25, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: clamp(0.6rem, 1.2vw, 1.2rem);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: var(--tiny-size);
+            line-height: 1.6;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+
+        .code-block .kw { color: var(--accent); }
+        .code-block .fn { color: var(--accent-2); }
+        .code-block .str { color: var(--accent-3); }
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .num { color: #f9a825; }
+
+        /* Bullet lists */
+        .bullets {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--element-gap);
+        }
+
+        .bullets li {
+            padding-left: 1.5em;
+            position: relative;
+        }
+
+        .bullets li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Section label */
+        .section-label {
+            font-size: var(--tiny-size);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+        }
+
+        /* ===========================================
+           BACKGROUND EFFECTS
+           =========================================== */
+        .bg-gradient {
+            background:
+                radial-gradient(ellipse at 25% 75%, rgba(124, 92, 252, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 75% 25%, rgba(78, 205, 196, 0.08) 0%, transparent 50%),
+                var(--bg-primary);
+        }
+
+        .bg-gradient-alt {
+            background:
+                radial-gradient(ellipse at 70% 80%, rgba(124, 92, 252, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 20%, rgba(255, 107, 157, 0.06) 0%, transparent 50%),
+                var(--bg-primary);
+        }
+
+        .bg-grid {
+            background-image:
+                linear-gradient(rgba(124, 92, 252, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 92, 252, 0.04) 1px, transparent 1px);
+            background-size: clamp(30px, 4vw, 60px) clamp(30px, 4vw, 60px);
+        }
+
+        /* Glow orb decoration */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--duration) var(--ease-out-expo),
+                        transform var(--duration) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.08s; }
+        .reveal-delay-2 { transition-delay: 0.16s; }
+        .reveal-delay-3 { transition-delay: 0.24s; }
+        .reveal-delay-4 { transition-delay: 0.32s; }
+        .reveal-delay-5 { transition-delay: 0.40s; }
+        .reveal-delay-6 { transition-delay: 0.48s; }
+
+        .slide.visible .bar-fill { width: var(--bar-width); }
+
+        /* Counter animation */
+        .counter { display: inline-block; }
+
+        /* Pulse glow */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+            50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 60px rgba(124, 92, 252, 0.15); }
+        }
+
+        .pulse { animation: pulse-glow 3s ease-in-out infinite; }
+
+        /* ===========================================
+           PROGRESS BAR + NAV
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            z-index: 100;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: clamp(0.5rem, 1.5vw, 1.5rem);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .nav-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+            transform: scale(1.3);
+        }
+
+        .nav-dot:hover { background: var(--accent); }
+
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(0.5rem, 1.5vw, 1.5rem);
+            right: clamp(0.5rem, 1.5vw, 1.5rem);
+            font-size: var(--tiny-size);
+            color: var(--text-muted);
+            font-family: var(--font-display);
+            z-index: 100;
+        }
+
+        .keyboard-hint {
+            position: fixed;
+            bottom: clamp(0.5rem, 1.5vw, 1.5rem);
+            left: clamp(0.5rem, 1.5vw, 1.5rem);
+            font-size: var(--tiny-size);
+            color: var(--text-muted);
+            z-index: 100;
+            opacity: 0.5;
+        }
+
+        /* ===========================================
+           RESPONSIVE
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(1rem, 3vw, 2.5rem);
+                --content-gap: clamp(0.4rem, 1.2vw, 1rem);
+                --h2-size: clamp(1.2rem, 3vw, 2rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.4rem, 4.5vw, 2.5rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .nav-dots, .keyboard-hint { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2vw, 1rem);
+                --title-size: clamp(1.1rem, 4vw, 1.8rem);
+                --h2-size: clamp(1rem, 2.5vw, 1.4rem);
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.5rem, 8vw, 3rem); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+
+        /* Two-column layout helper */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--content-gap);
+            align-items: start;
+        }
+
+        @media (max-width: 700px) {
+            .two-col { grid-template-columns: 1fr; }
+        }
+
+        /* Comparison table special */
+        .comparison-row {
+            display: grid;
+            grid-template-columns: clamp(90px, 14vw, 160px) 1fr clamp(60px, 10vw, 130px);
+            gap: clamp(0.3rem, 0.6vw, 0.6rem);
+            padding: clamp(0.3rem, 0.5vh, 0.5rem) 0;
+            border-bottom: 1px solid rgba(124, 92, 252, 0.06);
+            align-items: center;
+        }
+
+        .comparison-row .issue { font-size: var(--small-size); color: var(--accent-3); }
+        .comparison-row .fix { font-size: var(--small-size); color: var(--accent-2); }
+
+        /* Signal card mini */
+        .signal-card {
+            padding: clamp(0.5rem, 1vw, 1rem);
+            border-left: 3px solid var(--accent);
+            background: var(--bg-card);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .signal-card h4 {
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.2em;
+        }
+
+        .signal-card p {
+            font-size: var(--tiny-size);
+            line-height: 1.4;
+        }
+
+        .signal-card.s2 { border-color: var(--accent-2); }
+        .signal-card.s3 { border-color: var(--accent-3); }
+        .signal-card.s4 { border-color: #f9a825; }
+
+        /* Phase timeline */
+        .phase-card {
+            padding: clamp(0.6rem, 1.2vw, 1.2rem);
+            border-radius: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: attr(data-phase);
+            position: absolute;
+            top: clamp(-8px, -0.8vh, -12px);
+            left: 1rem;
+            font-size: var(--tiny-size);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.1em 0.6em;
+            border-radius: 20px;
+        }
+
+        .phase-card.p1::before { background: var(--accent); color: #fff; }
+        .phase-card.p2::before { background: var(--accent-2); color: #000; }
+        .phase-card.p3::before { background: var(--accent-3); color: #fff; }
+
+        /* Win card */
+        .win-item {
+            display: flex;
+            gap: clamp(0.4rem, 0.8vw, 0.8rem);
+            align-items: flex-start;
+        }
+
+        .win-icon {
+            font-size: clamp(1rem, 2vw, 1.6rem);
+            flex-shrink: 0;
+            width: clamp(28px, 3vw, 40px);
+            height: clamp(28px, 3vw, 40px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(124, 92, 252, 0.1);
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter"></div>
+    <div class="keyboard-hint">↑↓ or Space</div>
+
+    <!-- ==========================================
+         SLIDE 1: TITLE
+         ========================================== -->
+    <section class="slide bg-gradient" id="slide-1">
+        <div class="glow-orb" style="width:400px;height:400px;background:rgba(124,92,252,0.15);top:-100px;right:-100px;"></div>
+        <div class="glow-orb" style="width:300px;height:300px;background:rgba(78,205,196,0.1);bottom:-50px;left:-50px;"></div>
+        <div class="slide-content" style="text-align:center;">
+            <div class="reveal" style="margin-bottom:var(--content-gap);">
+                <span class="tag">AI-Powered Talent Screening</span>
+            </div>
+            <h1 class="reveal reveal-delay-1" style="margin-bottom:clamp(0.5rem,1.5vw,1.2rem);">
+                Resume <span class="gradient-text">Matcher</span>
+            </h1>
+            <p class="reveal reveal-delay-2" style="font-size:var(--h3-size);color:var(--text-secondary);max-width:700px;margin:0 auto;">
+                Hybrid Multi-Signal Pipeline for Intelligent Resume-to-JD Matching
+            </p>
+            <p class="reveal reveal-delay-3" style="margin-top:clamp(1rem,3vw,2.5rem);font-size:var(--small-size);color:var(--text-muted);">
+                Tejesh &mdash; AI Solutions Team
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 2: THE PROBLEM
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-2">
+        <div class="slide-content">
+            <p class="section-label reveal">The Problem</p>
+            <h2 class="reveal reveal-delay-1">Manual Screening Is <span class="gradient-text-2">Broken</span></h2>
+
+            <div class="grid-2 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="glass-card metric-box">
+                    <div class="metric-value gradient-text">1.5 hrs</div>
+                    <div class="metric-label">per open role</div>
+                    <div class="metric-detail">23s × 250 applicants avg</div>
+                </div>
+                <div class="glass-card metric-box">
+                    <div class="metric-value gradient-text-2">58%</div>
+                    <div class="metric-label">of hires from top 3 viewed</div>
+                    <div class="metric-detail">qualified candidates overlooked</div>
+                </div>
+            </div>
+
+            <ul class="bullets reveal reveal-delay-3" style="margin-top:var(--content-gap);">
+                <li><strong style="color:var(--text-primary);">Inconsistent</strong> — different recruiters, different results for the same candidate</li>
+                <li><strong style="color:var(--text-primary);">Keyword tunnel vision</strong> — "ML" vs "Machine Learning" treated as different skills</li>
+                <li><strong style="color:var(--text-primary);">No explainability</strong> — recruiter can't tell <em>why</em> a candidate was ranked</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 3: SOLUTION OVERVIEW
+         ========================================== -->
+    <section class="slide bg-gradient" id="slide-3">
+        <div class="slide-content">
+            <p class="section-label reveal">Our Solution</p>
+            <h2 class="reveal reveal-delay-1">The Matching Pipeline</h2>
+
+            <div class="pipeline reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="pipeline-step">Resume<br><span style="font-size:var(--tiny-size);color:var(--text-muted);">PDF / text</span></div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step">PARSE<br><span style="font-size:var(--tiny-size);color:var(--text-muted);">spaCy + regex</span></div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step">EXTRACT<br><span style="font-size:var(--tiny-size);color:var(--text-muted);">skills, exp, edu</span></div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step active pulse">SCORE<br><span style="font-size:var(--tiny-size);color:var(--accent);">7 signals</span></div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step">RANK<br><span style="font-size:var(--tiny-size);color:var(--text-muted);">weighted agg</span></div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step">EXPLAIN<br><span style="font-size:var(--tiny-size);color:var(--text-muted);">LLM (Claude)</span></div>
+            </div>
+
+            <div class="glass-card reveal reveal-delay-3" style="margin-top:var(--content-gap);text-align:center;padding:clamp(0.8rem,1.5vw,1.5rem);">
+                <p style="font-size:var(--body-size);color:var(--text-primary);">
+                    <strong>Core insight:</strong> No single signal is enough. <br>
+                    <span style="color:var(--text-secondary);">Our hybrid approach makes each signal cover the others' blind spots.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 4: WHY HYBRID
+         ========================================== -->
+    <section class="slide bg-gradient-alt bg-grid" id="slide-4">
+        <div class="slide-content">
+            <p class="section-label reveal">Core Design Decision</p>
+            <h2 class="reveal reveal-delay-1">Why <span class="gradient-text">Hybrid</span>?</h2>
+
+            <div style="display:flex;flex-direction:column;gap:var(--element-gap);margin-top:var(--content-gap);">
+                <div class="comparison-row reveal reveal-delay-2">
+                    <span style="font-size:var(--small-size);font-weight:600;color:var(--text-primary);">TF-IDF Only</span>
+                    <span class="issue">Misses synonyms ("ML" ≠ "Machine Learning")</span>
+                    <span class="fix">Embeddings fix this</span>
+                </div>
+                <div class="comparison-row reveal reveal-delay-3">
+                    <span style="font-size:var(--small-size);font-weight:600;color:var(--text-primary);">Embeddings Only</span>
+                    <span class="issue">Misses exact requirements ("must have PMP")</span>
+                    <span class="fix">TF-IDF + skills fix this</span>
+                </div>
+                <div class="comparison-row reveal reveal-delay-4">
+                    <span style="font-size:var(--small-size);font-weight:600;color:var(--text-primary);">LLM-as-Judge</span>
+                    <span class="issue">Primacy bias, 100x slower, non-deterministic</span>
+                    <span class="fix">LLM for explain only</span>
+                </div>
+                <div class="comparison-row reveal reveal-delay-5" style="border-color:var(--accent);background:rgba(124,92,252,0.05);border-radius:8px;padding-left:0.5rem;">
+                    <span style="font-size:var(--small-size);font-weight:700;color:var(--accent);">Hybrid (Ours)</span>
+                    <span style="font-size:var(--small-size);color:var(--text-primary);">7 signals — each covers the others' blind spots</span>
+                    <span class="tag">Best of all</span>
+                </div>
+            </div>
+
+            <p class="reveal reveal-delay-6" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
+                Ref: Iso et al., NAACL 2025 — primacy bias in LLM-based resume screening &nbsp;|&nbsp; ConFit v2, RecSys 2024 — domain-specific beats general LLMs
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 5: THE 7 SCORING SIGNALS
+         ========================================== -->
+    <section class="slide bg-gradient" id="slide-5">
+        <div class="slide-content">
+            <p class="section-label reveal">Scoring Engine</p>
+            <h2 class="reveal reveal-delay-1">7 Scoring <span class="gradient-text">Signals</span></h2>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--element-gap);margin-top:var(--content-gap);">
+                <div class="signal-card reveal reveal-delay-1">
+                    <h4>1. Semantic Similarity</h4>
+                    <p>Sentence embeddings, cosine distance — catches synonyms and paraphrases</p>
+                </div>
+                <div class="signal-card s2 reveal reveal-delay-2">
+                    <h4>2. Skills Semantic</h4>
+                    <p>Embedding comparison of extracted skill lists — "React" ≈ "React.js"</p>
+                </div>
+                <div class="signal-card s3 reveal reveal-delay-2">
+                    <h4>3. Skill Overlap</h4>
+                    <p>70% recall + 30% Jaccard blend — exact skill matching with coverage weighting</p>
+                </div>
+                <div class="signal-card s4 reveal reveal-delay-3">
+                    <h4>4. TF-IDF Keywords</h4>
+                    <p>Sublinear TF for anti-gaming — repeated keywords saturate quickly</p>
+                </div>
+                <div class="signal-card reveal reveal-delay-3">
+                    <h4>5. Title Match</h4>
+                    <p>Job title similarity via embeddings — "SWE" ≈ "Software Engineer"</p>
+                </div>
+                <div class="signal-card s2 reveal reveal-delay-4">
+                    <h4>6. Experience Match</h4>
+                    <p>Piecewise: 70%+ → 0.6 floor, 100-150% → 1.0, >150% → overqualification decay</p>
+                </div>
+                <div class="signal-card s3 reveal reveal-delay-4" style="grid-column:span 2;">
+                    <h4>7. Education Match</h4>
+                    <p>5-level ordinal scale (none → PhD). No penalty for exceeding requirement — higher degree is never a flight risk.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 6: NA-AWARE AGGREGATION
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-6">
+        <div class="slide-content">
+            <p class="section-label reveal">Signal Processing</p>
+            <h2 class="reveal reveal-delay-1">NA-Aware <span class="gradient-text">Aggregation</span></h2>
+
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div>
+                    <h3 class="reveal reveal-delay-2" style="margin-bottom:var(--element-gap);">Normalization</h3>
+                    <table class="data-table reveal reveal-delay-2">
+                        <thead>
+                            <tr><th>Signal</th><th>Raw</th><th>→ [0,1]</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>semantic</td><td>cosine [-1,1]</td><td>(x+1)/2</td></tr>
+                            <tr><td>skills_overlap</td><td>Jaccard [0,1]</td><td>identity</td></tr>
+                            <tr><td>tfidf</td><td>cosine [0,1]</td><td>identity</td></tr>
+                            <tr><td>experience</td><td>piecewise</td><td>[0,1]</td></tr>
+                            <tr><td>education</td><td>ordinal</td><td>[0,1]</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 class="reveal reveal-delay-3" style="margin-bottom:var(--element-gap);">Missing Signals</h3>
+                    <div class="glass-card reveal reveal-delay-3" style="margin-bottom:var(--element-gap);">
+                        <p style="color:var(--text-primary);font-size:var(--small-size);">When a signal is <code style="color:var(--accent);">None</code>:</p>
+                        <ul class="bullets" style="margin-top:0.5em;">
+                            <li>Signal is <strong style="color:var(--accent-2);">skipped</strong>, not zeroed</li>
+                            <li>Remaining weights <strong style="color:var(--accent-2);">auto-redistribute</strong></li>
+                            <li>Prevents penalizing sparse resumes</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card reveal reveal-delay-4" style="border-color:rgba(255,107,157,0.2);">
+                        <p style="font-size:var(--small-size);color:var(--accent-3);">All signals None → score = 0.0</p>
+                        <p style="font-size:var(--tiny-size);color:var(--text-muted);">Sparse signal penalty catches empty / garbage inputs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 7: SMART WEIGHT SELECTION
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-7">
+        <div class="slide-content">
+            <p class="section-label reveal">Adaptive Scoring</p>
+            <h2 class="reveal reveal-delay-1">Smart Weight <span class="gradient-text">Auto-Selection</span></h2>
+
+            <div class="grid-2 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="glass-card" style="border-color:rgba(124,92,252,0.3);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--element-gap);">
+                        <h3 style="font-size:var(--body-size);">Semantic Profile</h3>
+                        <span class="tag">Default</span>
+                    </div>
+                    <div class="bar-chart">
+                        <div class="bar-row"><span class="bar-label">semantic</span><div class="bar-track"><div class="bar-fill" style="--bar-width:86%;background:var(--gradient-1);"></div></div><span class="bar-val">43%</span></div>
+                        <div class="bar-row"><span class="bar-label">tfidf</span><div class="bar-track"><div class="bar-fill" style="--bar-width:92%;background:var(--gradient-1);"></div></div><span class="bar-val">46%</span></div>
+                        <div class="bar-row"><span class="bar-label">skills_sem</span><div class="bar-track"><div class="bar-fill" style="--bar-width:10%;background:var(--gradient-1);"></div></div><span class="bar-val">5%</span></div>
+                        <div class="bar-row"><span class="bar-label">experience</span><div class="bar-track"><div class="bar-fill" style="--bar-width:10%;background:var(--gradient-1);"></div></div><span class="bar-val">5%</span></div>
+                    </div>
+                    <p style="margin-top:var(--element-gap);font-size:var(--tiny-size);color:var(--text-muted);">Text-heavy — robust across domains</p>
+                </div>
+
+                <div class="glass-card" style="border-color:rgba(78,205,196,0.3);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--element-gap);">
+                        <h3 style="font-size:var(--body-size);">Structured Profile</h3>
+                        <span class="tag-green">Credential-heavy JDs</span>
+                    </div>
+                    <div class="bar-chart">
+                        <div class="bar-row"><span class="bar-label">education</span><div class="bar-track"><div class="bar-fill" style="--bar-width:80%;background:var(--gradient-3);"></div></div><span class="bar-val">40%</span></div>
+                        <div class="bar-row"><span class="bar-label">experience</span><div class="bar-track"><div class="bar-fill" style="--bar-width:72%;background:var(--gradient-3);"></div></div><span class="bar-val">36%</span></div>
+                        <div class="bar-row"><span class="bar-label">tfidf</span><div class="bar-track"><div class="bar-fill" style="--bar-width:22%;background:var(--gradient-3);"></div></div><span class="bar-val">11%</span></div>
+                        <div class="bar-row"><span class="bar-label">skills_sem</span><div class="bar-track"><div class="bar-fill" style="--bar-width:16%;background:var(--gradient-3);"></div></div><span class="bar-val">8%</span></div>
+                    </div>
+                    <p style="margin-top:var(--element-gap);font-size:var(--tiny-size);color:var(--text-muted);">Triggers when JD has years + degree + 5+ skills</p>
+                </div>
+            </div>
+
+            <p class="reveal reveal-delay-3" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
+                Weights learned via differential evolution on labeled data &nbsp;|&nbsp; Serialized to <code style="color:var(--accent);">data/trained_weights/</code> for auto-loading
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 8: TECH STACK
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-8">
+        <div class="slide-content">
+            <p class="section-label reveal">Implementation</p>
+            <h2 class="reveal reveal-delay-1">Tech <span class="gradient-text">Stack</span></h2>
+
+            <table class="data-table reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <thead>
+                    <tr><th>Component</th><th>Library</th><th>Why This Choice</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td style="color:var(--text-primary);">PDF Parsing</td><td style="color:var(--accent);">PyMuPDF</td><td>Fastest Python PDF library, best text extraction quality</td></tr>
+                    <tr><td style="color:var(--text-primary);">NLP Processing</td><td style="color:var(--accent);">spaCy + regex</td><td>Section detection, NER, experience parsing</td></tr>
+                    <tr><td style="color:var(--text-primary);">Skill Extraction</td><td style="color:var(--accent);">PhraseMatcher + O*NET</td><td>1,400+ skills across 20 categories, no training data needed</td></tr>
+                    <tr><td style="color:var(--text-primary);">Embeddings</td><td style="color:var(--accent);">all-MiniLM-L6-v2</td><td>22M params, CPU-friendly, ~50ms/resume</td></tr>
+                    <tr><td style="color:var(--text-primary);">Weight Learning</td><td style="color:var(--accent);">Differential Evolution</td><td>Global optimization on labeled data, no gradient needed</td></tr>
+                    <tr><td style="color:var(--text-primary);">LLM Explanation</td><td style="color:var(--accent);">Claude Sonnet</td><td>Top-3 candidates only, cached, PII-anonymized</td></tr>
+                    <tr><td style="color:var(--text-primary);">API</td><td style="color:var(--accent);">FastAPI</td><td>Typed REST, auto-docs, startup model warmup</td></tr>
+                    <tr><td style="color:var(--text-primary);">Frontend</td><td style="color:var(--accent);">React + Vite + Tailwind</td><td>Production SPA with dark/light theme, radar charts</td></tr>
+                </tbody>
+            </table>
+
+            <p class="reveal reveal-delay-3" style="margin-top:var(--element-gap);font-size:var(--tiny-size);color:var(--text-muted);text-align:center;">
+                Docker multi-stage build &nbsp;|&nbsp; CI/CD (GitHub Actions: lint, type-check, 80%+ coverage, pip-audit, Trivy scan)
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 9: ANTI-GAMING
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-9">
+        <div class="slide-content">
+            <p class="section-label reveal">Robustness</p>
+            <h2 class="reveal reveal-delay-1">Anti-Gaming <span class="gradient-text-2">Defenses</span></h2>
+
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div>
+                    <ul class="bullets reveal reveal-delay-2">
+                        <li><strong style="color:var(--text-primary);">Skill cap at 40</strong> — 99th percentile of real resumes. Beyond this, extra skills are ignored</li>
+                        <li><strong style="color:var(--text-primary);">Sublinear TF-IDF</strong> — <code style="color:var(--accent);">sublinear_tf=True</code> means keyword repetition saturates quickly</li>
+                        <li><strong style="color:var(--text-primary);">Multi-signal defense</strong> — stuffed resume scores high on keywords but low on semantic, experience, education</li>
+                    </ul>
+                </div>
+                <div class="reveal reveal-delay-3">
+                    <div class="glass-card" style="border-color:rgba(78,205,196,0.3);">
+                        <h3 style="font-size:var(--small-size);margin-bottom:var(--element-gap);color:var(--accent-2);">Test Case: Focused vs Stuffed</h3>
+                        <div style="display:flex;flex-direction:column;gap:var(--element-gap);">
+                            <div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:0.2em;">
+                                    <span style="font-size:var(--small-size);color:var(--text-primary);">Focused resume (5 skills)</span>
+                                    <span style="font-size:var(--small-size);font-weight:700;color:var(--accent-2);">0.82</span>
+                                </div>
+                                <div class="bar-track"><div class="bar-fill" style="--bar-width:82%;background:var(--gradient-3);"></div></div>
+                            </div>
+                            <div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:0.2em;">
+                                    <span style="font-size:var(--small-size);color:var(--text-primary);">Stuffed resume (100 skills)</span>
+                                    <span style="font-size:var(--small-size);font-weight:700;color:var(--accent-3);">0.41</span>
+                                </div>
+                                <div class="bar-track"><div class="bar-fill" style="--bar-width:41%;background:var(--gradient-2);"></div></div>
+                            </div>
+                        </div>
+                        <p style="font-size:var(--tiny-size);color:var(--text-muted);margin-top:var(--element-gap);">Unit test enforces: focused > stuffed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 10: EVALUATION RESULTS
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-10">
+        <div class="slide-content">
+            <p class="section-label reveal">Evaluation</p>
+            <h2 class="reveal reveal-delay-1">Primary <span class="gradient-text">Metrics</span></h2>
+
+            <div class="grid-3 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="glass-card metric-box pulse">
+                    <div class="metric-value gradient-text counter" data-target="0.992">0</div>
+                    <div class="metric-label">nDCG@10</div>
+                    <div class="metric-detail">CI: [0.985, 0.998]</div>
+                </div>
+                <div class="glass-card metric-box">
+                    <div class="metric-value gradient-text-2 counter" data-target="0.811">0</div>
+                    <div class="metric-label">Spearman ρ</div>
+                    <div class="metric-detail">p &lt; 0.0001</div>
+                </div>
+                <div class="glass-card metric-box">
+                    <div class="metric-value" style="color:var(--accent-2);"><span class="counter" data-target="64">0</span></div>
+                    <div class="metric-label">Labeled Pairs</div>
+                    <div class="metric-detail">12 JDs × 9 industries</div>
+                </div>
+            </div>
+
+            <div class="glass-card reveal reveal-delay-3" style="margin-top:var(--content-gap);">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--element-gap);">
+                    <div>
+                        <p style="font-size:var(--small-size);color:var(--text-muted);">Dataset Composition</p>
+                        <p style="font-size:var(--small-size);color:var(--text-primary);">44 synthetic resumes &bull; 12 JDs &bull; 9 industries &bull; 64 labeled pairs</p>
+                    </div>
+                    <div>
+                        <p style="font-size:var(--small-size);color:var(--text-muted);">Label Distribution</p>
+                        <p style="font-size:var(--small-size);">
+                            <span style="color:var(--accent-2);">Good (3)</span> &bull;
+                            <span style="color:#f9a825;">Partial (2)</span> &bull;
+                            <span style="color:var(--accent-3);">Poor (1)</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p style="font-size:var(--small-size);color:var(--text-muted);">Bootstrap CIs</p>
+                        <p style="font-size:var(--small-size);color:var(--text-primary);">k=1000, 95% confidence</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 11: BASELINES COMPARISON
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-11">
+        <div class="slide-content">
+            <p class="section-label reveal">Baselines</p>
+            <h2 class="reveal reveal-delay-1">Hybrid vs. <span class="gradient-text">Single-Signal</span></h2>
+
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div class="reveal reveal-delay-2">
+                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);">nDCG@10 Comparison</h3>
+                    <div class="bar-chart">
+                        <div class="bar-row"><span class="bar-label" style="color:var(--accent);">Hybrid (ours)</span><div class="bar-track"><div class="bar-fill" style="--bar-width:99.2%;background:var(--gradient-1);"></div></div><span class="bar-val">0.992</span></div>
+                        <div class="bar-row"><span class="bar-label">TF-IDF Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:99.4%;background:rgba(124,92,252,0.3);"></div></div><span class="bar-val">0.994</span></div>
+                        <div class="bar-row"><span class="bar-label">Text Signals</span><div class="bar-track"><div class="bar-fill" style="--bar-width:98.4%;background:rgba(124,92,252,0.25);"></div></div><span class="bar-val">0.984</span></div>
+                        <div class="bar-row"><span class="bar-label">Skills Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:98.2%;background:rgba(124,92,252,0.2);"></div></div><span class="bar-val">0.982</span></div>
+                        <div class="bar-row"><span class="bar-label">Embedding</span><div class="bar-track"><div class="bar-fill" style="--bar-width:97.6%;background:rgba(124,92,252,0.15);"></div></div><span class="bar-val">0.976</span></div>
+                        <div class="bar-row"><span class="bar-label">Structured</span><div class="bar-track"><div class="bar-fill" style="--bar-width:90.3%;background:rgba(124,92,252,0.1);"></div></div><span class="bar-val">0.903</span></div>
+                    </div>
+                </div>
+                <div class="reveal reveal-delay-3">
+                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);">Spearman ρ Comparison</h3>
+                    <div class="bar-chart">
+                        <div class="bar-row"><span class="bar-label">TF-IDF Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:85.1%;background:rgba(78,205,196,0.3);"></div></div><span class="bar-val">0.851</span></div>
+                        <div class="bar-row"><span class="bar-label" style="color:var(--accent);">Hybrid (ours)</span><div class="bar-track"><div class="bar-fill" style="--bar-width:81.1%;background:var(--gradient-3);"></div></div><span class="bar-val">0.811</span></div>
+                        <div class="bar-row"><span class="bar-label">Text Signals</span><div class="bar-track"><div class="bar-fill" style="--bar-width:81.2%;background:rgba(78,205,196,0.25);"></div></div><span class="bar-val">0.812</span></div>
+                        <div class="bar-row"><span class="bar-label">Skills Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:78.1%;background:rgba(78,205,196,0.2);"></div></div><span class="bar-val">0.781</span></div>
+                        <div class="bar-row"><span class="bar-label">Embedding</span><div class="bar-track"><div class="bar-fill" style="--bar-width:71.2%;background:rgba(78,205,196,0.15);"></div></div><span class="bar-val">0.712</span></div>
+                        <div class="bar-row"><span class="bar-label">Structured</span><div class="bar-track"><div class="bar-fill" style="--bar-width:30.7%;background:rgba(78,205,196,0.1);"></div></div><span class="bar-val">0.307</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="reveal reveal-delay-4" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
+                Hybrid matches TF-IDF accuracy <strong style="color:var(--text-primary);">while providing per-signal explainability</strong> — the real value.
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 12: CROSS-DOMAIN VALIDATION
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-12">
+        <div class="slide-content">
+            <p class="section-label reveal">External Validation</p>
+            <h2 class="reveal reveal-delay-1">Cross-Domain <span class="gradient-text">Results</span></h2>
+
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div class="reveal reveal-delay-2">
+                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);">batuhanmtl (n=300, 23 categories)</h3>
+                    <div class="bar-chart">
+                        <div class="bar-row"><span class="bar-label">TF-IDF Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:59.3%;background:rgba(124,92,252,0.3);"></div></div><span class="bar-val">0.593</span></div>
+                        <div class="bar-row"><span class="bar-label" style="color:var(--accent);">Hybrid-Sem</span><div class="bar-track"><div class="bar-fill" style="--bar-width:57.5%;background:var(--gradient-1);"></div></div><span class="bar-val">0.575</span></div>
+                        <div class="bar-row"><span class="bar-label">Embedding</span><div class="bar-track"><div class="bar-fill" style="--bar-width:47.1%;background:rgba(124,92,252,0.2);"></div></div><span class="bar-val">0.471</span></div>
+                        <div class="bar-row"><span class="bar-label">Skills Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:20.3%;background:rgba(124,92,252,0.15);"></div></div><span class="bar-val">0.203</span></div>
+                        <div class="bar-row"><span class="bar-label">Structured</span><div class="bar-track"><div class="bar-fill" style="--bar-width:5.4%;background:rgba(124,92,252,0.1);"></div></div><span class="bar-val">0.054</span></div>
+                    </div>
+                </div>
+                <div class="reveal reveal-delay-3">
+                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);">Per-Category Spearman (Non-Tech)</h3>
+                    <div class="bar-chart">
+                        <div class="bar-row"><span class="bar-label">Chef</span><div class="bar-track"><div class="bar-fill" style="--bar-width:77.1%;background:var(--gradient-3);"></div></div><span class="bar-val">0.771</span></div>
+                        <div class="bar-row"><span class="bar-label">Finance</span><div class="bar-track"><div class="bar-fill" style="--bar-width:67%;background:var(--gradient-3);"></div></div><span class="bar-val">0.670</span></div>
+                        <div class="bar-row"><span class="bar-label">Agriculture</span><div class="bar-track"><div class="bar-fill" style="--bar-width:62.7%;background:var(--gradient-3);"></div></div><span class="bar-val">0.627</span></div>
+                        <div class="bar-row"><span class="bar-label">Teacher</span><div class="bar-track"><div class="bar-fill" style="--bar-width:61.7%;background:var(--gradient-3);"></div></div><span class="bar-val">0.617</span></div>
+                        <div class="bar-row"><span class="bar-label">Healthcare</span><div class="bar-track"><div class="bar-fill" style="--bar-width:51.3%;background:var(--gradient-3);"></div></div><span class="bar-val">0.513</span></div>
+                        <div class="bar-row"><span class="bar-label">Aviation</span><div class="bar-track"><div class="bar-fill" style="--bar-width:58.4%;background:var(--gradient-3);"></div></div><span class="bar-val">0.584</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="reveal reveal-delay-4" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
+                Validated on 3 external datasets: HuggingFace resume-JD fit, batuhanmtl (23 categories), Vanetik (30 CVs × 5 vacancies with human rankings)
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 13: ABLATION
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-13">
+        <div class="slide-content">
+            <p class="section-label reveal">Signal Importance</p>
+            <h2 class="reveal reveal-delay-1">Ablation <span class="gradient-text">Study</span></h2>
+
+            <p class="reveal reveal-delay-2" style="font-size:var(--small-size);color:var(--text-secondary);margin-bottom:var(--content-gap);">
+                Drop each signal one at a time. Baseline nDCG@10: <strong style="color:var(--accent);">0.992</strong>
+            </p>
+
+            <table class="data-table reveal reveal-delay-3">
+                <thead>
+                    <tr><th>Signal Dropped</th><th>nDCG Without</th><th>ΔNDCG</th><th>Impact</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td style="color:var(--text-primary);">semantic</td><td>0.985</td><td style="color:var(--accent-3);">-0.007</td><td><span class="tag-pink" style="font-size:var(--tiny-size);">Medium</span></td></tr>
+                    <tr><td style="color:var(--text-primary);">skills_semantic</td><td>0.990</td><td style="color:var(--accent-3);">-0.002</td><td><span class="tag" style="font-size:var(--tiny-size);">Low</span></td></tr>
+                    <tr><td style="color:var(--text-primary);">skills_overlap</td><td>0.991</td><td style="color:var(--accent-3);">-0.001</td><td><span class="tag" style="font-size:var(--tiny-size);">Low</span></td></tr>
+                    <tr><td style="color:var(--text-primary);">tfidf</td><td>0.978</td><td style="color:var(--accent-3);">-0.014</td><td><span class="tag-pink" style="font-size:var(--tiny-size);">Medium</span></td></tr>
+                    <tr><td style="color:var(--text-primary);">title_match</td><td>0.992</td><td>0.000</td><td><span class="tag" style="font-size:var(--tiny-size);">Low</span></td></tr>
+                    <tr><td style="color:var(--text-primary);">experience</td><td>0.993</td><td style="color:var(--accent-2);">+0.001</td><td><span class="tag" style="font-size:var(--tiny-size);">Low</span></td></tr>
+                    <tr><td style="color:var(--text-primary);">education</td><td>0.993</td><td style="color:var(--accent-2);">+0.001</td><td><span class="tag" style="font-size:var(--tiny-size);">Low</span></td></tr>
+                </tbody>
+            </table>
+
+            <p class="reveal reveal-delay-4" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
+                With semantic weights, text signals (tfidf, semantic) dominate. Experience/education contribute on structured datasets (see optimize_weights.py).
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 14: FAIRNESS
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-14">
+        <div class="slide-content">
+            <p class="section-label reveal">Responsible AI</p>
+            <h2 class="reveal reveal-delay-1">Fairness <span class="gradient-text-2">Analysis</span></h2>
+
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div>
+                    <ul class="bullets reveal reveal-delay-2">
+                        <li><strong style="color:var(--text-primary);">Gender inference</strong> from candidate names via gender-guesser library</li>
+                        <li><strong style="color:var(--text-primary);">Four-fifths rule</strong> check on selection rates by group</li>
+                        <li><strong style="color:var(--text-primary);">Swap reranking</strong> when disparity detected — only swaps within 0.05 score difference</li>
+                        <li><strong style="color:var(--text-primary);">Every API response</strong> includes fairness metrics: group counts, selection rate ratio, delta exposure</li>
+                    </ul>
+                </div>
+                <div class="reveal reveal-delay-3">
+                    <div class="glass-card" style="border-color:rgba(255,107,157,0.2);">
+                        <h3 style="font-size:var(--small-size);margin-bottom:var(--element-gap);color:var(--accent-3);">Production Compliance Plan</h3>
+                        <ul class="bullets">
+                            <li>NYC Local Law 144 bias audit</li>
+                            <li>EU AI Act compliance (high-risk AI)</li>
+                            <li>Name/demographic anonymization</li>
+                            <li>Adversarial debiasing (full embedding debiasing)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 15: LIVE DEMO
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-15">
+        <div class="slide-content" style="text-align:center;">
+            <p class="section-label reveal">Live Demo</p>
+            <h2 class="reveal reveal-delay-1" style="font-size:var(--title-size);">
+                <span class="gradient-text">Live Demo</span>
+            </h2>
+
+            <div class="grid-3 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="glass-card">
+                    <h3 style="font-size:var(--body-size);color:var(--accent);margin-bottom:var(--element-gap);">Demo Mode</h3>
+                    <p style="font-size:var(--small-size);">11 same-domain + 7 cross-domain pre-built scenarios across 9 industries</p>
+                </div>
+                <div class="glass-card">
+                    <h3 style="font-size:var(--body-size);color:var(--accent-2);margin-bottom:var(--element-gap);">Custom Mode</h3>
+                    <p style="font-size:var(--small-size);">Upload any PDF/text resumes + paste any JD for real-time matching</p>
+                </div>
+                <div class="glass-card">
+                    <h3 style="font-size:var(--body-size);color:var(--accent-3);margin-bottom:var(--element-gap);">Per Candidate</h3>
+                    <p style="font-size:var(--small-size);">Radar chart, skill badges, matched/missing skills, AI explanation</p>
+                </div>
+            </div>
+
+            <div class="reveal reveal-delay-3" style="margin-top:var(--content-gap);">
+                <div class="pipeline" style="justify-content:center;">
+                    <div class="pipeline-step">React + Vite</div>
+                    <span class="pipeline-arrow">↔</span>
+                    <div class="pipeline-step active">FastAPI</div>
+                    <span class="pipeline-arrow">↔</span>
+                    <div class="pipeline-step">ML Pipeline</div>
+                </div>
+                <p style="font-size:var(--tiny-size);color:var(--text-muted);margin-top:var(--element-gap);">
+                    Docker multi-stage &nbsp;|&nbsp; localhost:8000 (API) &nbsp;|&nbsp; localhost:5173 (dev)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 16: LIMITATIONS
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-16">
+        <div class="slide-content">
+            <p class="section-label reveal">Honest Assessment</p>
+            <h2 class="reveal reveal-delay-1">Known <span class="gradient-text-2">Limitations</span></h2>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--element-gap);margin-top:var(--content-gap);">
+                <div class="glass-card reveal reveal-delay-2" style="border-color:rgba(255,107,157,0.2);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-3);margin-bottom:0.3em;">No fine-tuning</h3>
+                    <p style="font-size:var(--tiny-size);">Generic embeddings. ConFit v2 showed +17.5% nDCG with domain fine-tuning.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-2" style="border-color:rgba(255,107,157,0.2);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-3);margin-bottom:0.3em;">Small eval set</h3>
+                    <p style="font-size:var(--tiny-size);">64 pairs, single annotator. Production needs 50+ JDs × 50+ resumes, 3 annotators.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-3" style="border-color:rgba(255,107,157,0.2);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-3);margin-bottom:0.3em;">Bias risk</h3>
+                    <p style="font-size:var(--tiny-size);">Embeddings encode training data biases. Fairness monitoring in place, full debiasing deferred.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-3" style="border-color:rgba(255,107,157,0.2);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-3);margin-bottom:0.3em;">Format sensitivity</h3>
+                    <p style="font-size:var(--tiny-size);">Regex-based section detection with fallback. Production: LayoutLMv3 for ML-based layout parsing.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-4" style="border-color:rgba(255,107,157,0.2);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-3);margin-bottom:0.3em;">English only</h3>
+                    <p style="font-size:var(--tiny-size);">Multilingual embedding swap (BGE-M3) would extend to 100+ languages.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-4" style="border-color:rgba(255,107,157,0.2);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-3);margin-bottom:0.3em;">Weight generalization</h3>
+                    <p style="font-size:var(--tiny-size);">Semantic similarity inflates between unrelated management roles. Per-domain weights help.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 17: PRODUCTION ROADMAP
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-17">
+        <div class="slide-content">
+            <p class="section-label reveal">What's Next</p>
+            <h2 class="reveal reveal-delay-1">Production <span class="gradient-text">Roadmap</span></h2>
+
+            <div class="grid-3 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="phase-card p1" data-phase="Phase 1 — 4-6 wks">
+                    <h3 style="font-size:var(--small-size);margin-top:var(--element-gap);margin-bottom:var(--element-gap);">Pilot</h3>
+                    <ul class="bullets">
+                        <li>Fine-tune bi-encoder on company data</li>
+                        <li>Skill taxonomy with synonym resolution</li>
+                        <li>ATS integration (API)</li>
+                        <li>GPU-enabled deployment</li>
+                    </ul>
+                </div>
+                <div class="phase-card p2" data-phase="Phase 2 — 2-3 mo">
+                    <h3 style="font-size:var(--small-size);margin-top:var(--element-gap);margin-bottom:var(--element-gap);">Scale</h3>
+                    <ul class="bullets">
+                        <li>Vector DB (FAISS/Qdrant) for 100K+ resumes</li>
+                        <li>Multi-stage: bi-encoder → cross-encoder → LLM</li>
+                        <li>Batch + real-time scoring</li>
+                        <li>Recruiter feedback loop</li>
+                    </ul>
+                </div>
+                <div class="phase-card p3" data-phase="Phase 3 — 3-6 mo">
+                    <h3 style="font-size:var(--small-size);margin-top:var(--element-gap);margin-bottom:var(--element-gap);">Production-Grade</h3>
+                    <ul class="bullets">
+                        <li>Bias audit (NYC LL144 / EU AI Act)</li>
+                        <li>A/B testing infrastructure</li>
+                        <li>Monitoring: nDCG drift, latency, cost</li>
+                        <li>Multi-language support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 18: PRODUCTION METRICS
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-18">
+        <div class="slide-content">
+            <p class="section-label reveal">Observability</p>
+            <h2 class="reveal reveal-delay-1">Production <span class="gradient-text-2">Monitoring</span></h2>
+
+            <div class="grid-2 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="glass-card">
+                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);color:var(--accent);">Quality Metrics</h3>
+                    <ul class="bullets">
+                        <li><strong style="color:var(--text-primary);">nDCG drift</strong> — weekly regression check against holdout set</li>
+                        <li><strong style="color:var(--text-primary);">Recruiter correlation</strong> — accept/reject vs predicted scores</li>
+                        <li><strong style="color:var(--text-primary);">Fairness alerts</strong> — four-fifths rule violation triggers</li>
+                    </ul>
+                </div>
+                <div class="glass-card">
+                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);color:var(--accent-2);">Operational Metrics</h3>
+                    <ul class="bullets">
+                        <li><strong style="color:var(--text-primary);">Latency p95</strong> — currently ~50ms/resume on CPU</li>
+                        <li><strong style="color:var(--text-primary);">Cost per match</strong> — LLM calls only for top-3 explain</li>
+                        <li><strong style="color:var(--text-primary);">Model loading</strong> — ~4s cold start, handled by startup warmup</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 19: WHY THIS WINS
+         ========================================== -->
+    <section class="slide bg-gradient bg-grid" id="slide-19">
+        <div class="slide-content">
+            <p class="section-label reveal">Summary</p>
+            <h2 class="reveal reveal-delay-1">Why This <span class="gradient-text">Approach Wins</span></h2>
+
+            <div class="grid-3 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <div class="glass-card">
+                    <div class="win-item">
+                        <div class="win-icon">🔍</div>
+                        <div>
+                            <h3 style="font-size:var(--small-size);margin-bottom:0.2em;">Transparent</h3>
+                            <p style="font-size:var(--tiny-size);">Per-signal breakdown — not a black box. Recruiters see <em>why</em>.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="win-item">
+                        <div class="win-icon" style="background:rgba(78,205,196,0.1);">⚡</div>
+                        <div>
+                            <h3 style="font-size:var(--small-size);margin-bottom:0.2em;">Fast</h3>
+                            <p style="font-size:var(--tiny-size);">~50ms/resume on CPU. No GPU needed for POC.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="win-item">
+                        <div class="win-icon" style="background:rgba(255,107,157,0.1);">🛡️</div>
+                        <div>
+                            <h3 style="font-size:var(--small-size);margin-bottom:0.2em;">Robust</h3>
+                            <p style="font-size:var(--tiny-size);">7 signals cover each other's blind spots. Anti-gaming built in.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="win-item">
+                        <div class="win-icon">⚖️</div>
+                        <div>
+                            <h3 style="font-size:var(--small-size);margin-bottom:0.2em;">Fair</h3>
+                            <p style="font-size:var(--tiny-size);">Built-in fairness monitoring + swap reranking. Production compliance ready.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="win-item">
+                        <div class="win-icon" style="background:rgba(78,205,196,0.1);">🔌</div>
+                        <div>
+                            <h3 style="font-size:var(--small-size);margin-bottom:0.2em;">Extensible</h3>
+                            <p style="font-size:var(--tiny-size);">Weight learning pipeline. Plug in new signals, retrain, deploy.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="win-item">
+                        <div class="win-icon" style="background:rgba(255,107,157,0.1);">🚀</div>
+                        <div>
+                            <h3 style="font-size:var(--small-size);margin-bottom:0.2em;">Production-Ready</h3>
+                            <p style="font-size:var(--tiny-size);">Docker, CI/CD, 80%+ test coverage, security scanning.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 20: Q&A
+         ========================================== -->
+    <section class="slide bg-gradient" id="slide-20">
+        <div class="glow-orb" style="width:500px;height:500px;background:rgba(124,92,252,0.12);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+        <div class="slide-content" style="text-align:center;">
+            <h2 class="reveal" style="font-size:var(--title-size);">
+                <span class="gradient-text">Q&A</span>
+            </h2>
+            <p class="reveal reveal-delay-1" style="font-size:var(--h3-size);color:var(--text-secondary);margin-top:var(--content-gap);">
+                Let's dive deeper.
+            </p>
+            <div class="reveal reveal-delay-2" style="margin-top:clamp(1rem,3vw,2.5rem);display:flex;gap:var(--element-gap);justify-content:center;flex-wrap:wrap;">
+                <span class="tag">Architecture</span>
+                <span class="tag-green">Evaluation</span>
+                <span class="tag-pink">Fairness</span>
+                <span class="tag">Production</span>
+                <span class="tag-green">Demo</span>
+            </div>
+
+            <p class="reveal reveal-delay-3" style="margin-top:clamp(1.5rem,4vw,3rem);font-size:var(--small-size);color:var(--text-muted);">
+                Tejesh &nbsp;|&nbsp; github.com/tejesh &nbsp;|&nbsp; Resume Matcher POC
+            </p>
+        </div>
+    </section>
+
+
+    <!-- ==========================================
+       PRESENTATION CONTROLLER
+       Handles navigation, animations, counters
+       ========================================== -->
+    <script>
+    class SlidePresentation {
+        constructor() {
+            this.slides = document.querySelectorAll('.slide');
+            this.total = this.slides.length;
+            this.current = 0;
+            this.isScrolling = false;
+
+            this.progressBar = document.getElementById('progressBar');
+            this.slideCounter = document.getElementById('slideCounter');
+            this.navDots = document.getElementById('navDots');
+
+            this.createNavDots();
+            this.setupIntersectionObserver();
+            this.setupKeyboard();
+            this.setupWheel();
+            this.setupTouch();
+            this.update();
+        }
+
+        createNavDots() {
+            for (let i = 0; i < this.total; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'nav-dot';
+                dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                dot.addEventListener('click', () => this.goTo(i));
+                this.navDots.appendChild(dot);
+            }
+        }
+
+        setupIntersectionObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        const index = Array.from(this.slides).indexOf(entry.target);
+                        if (index !== -1) {
+                            this.current = index;
+                            this.update();
+                            this.animateCounters(entry.target);
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            this.slides.forEach(slide => observer.observe(slide));
+        }
+
+        setupKeyboard() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    this.next();
+                } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    this.prev();
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    this.goTo(0);
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    this.goTo(this.total - 1);
+                }
+            });
+        }
+
+        setupWheel() {
+            let timeout;
+            document.addEventListener('wheel', (e) => {
+                if (this.isScrolling) return;
+                clearTimeout(timeout);
+
+                if (Math.abs(e.deltaY) > 30) {
+                    this.isScrolling = true;
+                    if (e.deltaY > 0) this.next();
+                    else this.prev();
+                    timeout = setTimeout(() => { this.isScrolling = false; }, 800);
+                }
+            }, { passive: true });
+        }
+
+        setupTouch() {
+            let startY = 0;
+            document.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                const diff = startY - e.changedTouches[0].clientY;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) this.next();
+                    else this.prev();
+                }
+            }, { passive: true });
+        }
+
+        next() {
+            if (this.current < this.total - 1) this.goTo(this.current + 1);
+        }
+
+        prev() {
+            if (this.current > 0) this.goTo(this.current - 1);
+        }
+
+        goTo(index) {
+            this.slides[index].scrollIntoView({ behavior: 'smooth' });
+            this.current = index;
+            this.update();
+        }
+
+        update() {
+            // Progress bar
+            const progress = ((this.current + 1) / this.total) * 100;
+            this.progressBar.style.width = progress + '%';
+
+            // Counter
+            this.slideCounter.textContent = `${this.current + 1} / ${this.total}`;
+
+            // Nav dots
+            const dots = this.navDots.querySelectorAll('.nav-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === this.current);
+            });
+        }
+
+        animateCounters(slide) {
+            const counters = slide.querySelectorAll('.counter[data-target]');
+            counters.forEach(el => {
+                if (el.dataset.animated) return;
+                el.dataset.animated = 'true';
+
+                const target = parseFloat(el.dataset.target);
+                const isDecimal = target < 10;
+                const duration = 1200;
+                const start = performance.now();
+
+                const animate = (now) => {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    const current = target * eased;
+
+                    if (isDecimal) {
+                        el.textContent = current.toFixed(3);
+                    } else {
+                        el.textContent = Math.round(current);
+                    }
+
+                    if (progress < 1) requestAnimationFrame(animate);
+                };
+
+                requestAnimationFrame(animate);
+            });
+        }
+    }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        new SlidePresentation();
+    });
+    </script>
+
+</body>
+</html>
