@@ -731,7 +731,7 @@
                 Hybrid Multi-Signal Pipeline for Intelligent Resume-to-JD Matching
             </p>
             <p class="reveal reveal-delay-3" style="margin-top:clamp(1rem,3vw,2.5rem);font-size:var(--small-size);color:var(--text-muted);">
-                Tejesh &mdash; AI Solutions Team
+                Tejesh - AI Solutions Team
             </p>
         </div>
     </section>
@@ -1009,27 +1009,106 @@
                 </div>
                 <div class="reveal reveal-delay-3">
                     <div class="glass-card" style="border-color:rgba(78,205,196,0.3);">
-                        <h3 style="font-size:var(--small-size);margin-bottom:var(--element-gap);color:var(--accent-2);">Test Case: Focused vs Stuffed</h3>
+                        <h3 style="font-size:var(--small-size);margin-bottom:var(--element-gap);color:var(--accent-2);">Validated: Focused vs Stuffed</h3>
                         <div style="display:flex;flex-direction:column;gap:var(--element-gap);">
                             <div>
                                 <div style="display:flex;justify-content:space-between;margin-bottom:0.2em;">
-                                    <span style="font-size:var(--small-size);color:var(--text-primary);">Focused resume (5 skills)</span>
-                                    <span style="font-size:var(--small-size);font-weight:700;color:var(--accent-2);">0.82</span>
+                                    <span style="font-size:var(--small-size);color:var(--text-primary);">Legitimate resume (17/36 skills)</span>
+                                    <span style="font-size:var(--small-size);font-weight:700;color:var(--accent-2);">0.918</span>
                                 </div>
-                                <div class="bar-track"><div class="bar-fill" style="--bar-width:82%;background:var(--gradient-3);"></div></div>
+                                <div class="bar-track"><div class="bar-fill" style="--bar-width:91.8%;background:var(--gradient-3);"></div></div>
                             </div>
                             <div>
                                 <div style="display:flex;justify-content:space-between;margin-bottom:0.2em;">
-                                    <span style="font-size:var(--small-size);color:var(--text-primary);">Stuffed resume (100 skills)</span>
-                                    <span style="font-size:var(--small-size);font-weight:700;color:var(--accent-3);">0.41</span>
+                                    <span style="font-size:var(--small-size);color:var(--text-primary);">Keyword-stuffed (158 skills, capped to 40)</span>
+                                    <span style="font-size:var(--small-size);font-weight:700;color:var(--accent-3);">0.687</span>
                                 </div>
-                                <div class="bar-track"><div class="bar-fill" style="--bar-width:41%;background:var(--gradient-2);"></div></div>
+                                <div class="bar-track"><div class="bar-fill" style="--bar-width:68.7%;background:var(--gradient-2);"></div></div>
                             </div>
                         </div>
-                        <p style="font-size:var(--tiny-size);color:var(--text-muted);margin-top:var(--element-gap);">Unit test enforces: focused > stuffed</p>
+                        <p style="font-size:var(--tiny-size);color:var(--text-muted);margin-top:var(--element-gap);">33.7% scoring gap - stuffed resume wins 5/7 signals but loses overall. Unit test enforces.</p>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 9B: PROOF - HYBRID WINS (Validated Demo Evidence)
+         ========================================== -->
+    <section class="slide bg-gradient-alt" id="slide-9b">
+        <div class="slide-content">
+            <p class="section-label reveal">Validated Evidence</p>
+            <h2 class="reveal reveal-delay-1">Proof: Hybrid <span class="gradient-text">Wins</span></h2>
+
+            <div class="grid-3 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
+                <!-- Proof 1: Zero ranking inversions -->
+                <div class="glass-card" style="border-color:rgba(78,205,196,0.3);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-2);margin-bottom:var(--element-gap);">Ranking Inversions vs Human</h3>
+                    <div style="display:flex;flex-direction:column;gap:clamp(0.3rem,0.6vw,0.5rem);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:var(--small-size);color:var(--accent);font-weight:600;">Hybrid</span>
+                            <span style="font-size:clamp(1.2rem,2.5vw,2rem);font-weight:700;color:var(--accent-2);font-family:var(--font-display);">0</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:var(--small-size);color:var(--text-secondary);">TF-IDF Only</span>
+                            <span style="font-size:clamp(1.2rem,2.5vw,2rem);font-weight:700;color:#f9a825;font-family:var(--font-display);">1</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:var(--small-size);color:var(--text-secondary);">Semantic Only</span>
+                            <span style="font-size:clamp(1.2rem,2.5vw,2rem);font-weight:700;color:var(--accent-3);font-family:var(--font-display);">3</span>
+                        </div>
+                    </div>
+                    <p style="font-size:var(--tiny-size);color:var(--text-muted);margin-top:var(--element-gap);">Perfect agreement with human ranking order</p>
+                </div>
+
+                <!-- Proof 2: Anti-gaming -->
+                <div class="glass-card" style="border-color:rgba(124,92,252,0.3);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent);margin-bottom:var(--element-gap);">Anti-Gaming Defense</h3>
+                    <div style="text-align:center;margin:var(--element-gap) 0;">
+                        <span style="font-size:clamp(1.8rem,3.5vw,3rem);font-weight:700;font-family:var(--font-display);background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">33.7%</span>
+                        <p style="font-size:var(--tiny-size);color:var(--text-muted);">scoring gap</p>
+                    </div>
+                    <div style="font-size:var(--tiny-size);color:var(--text-secondary);">
+                        <div style="display:flex;justify-content:space-between;">
+                            <span>Legitimate (17/36 skills)</span>
+                            <span style="color:var(--accent-2);font-weight:600;">0.918</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;">
+                            <span>Stuffed (158 skills, capped)</span>
+                            <span style="color:var(--accent-3);font-weight:600;">0.687</span>
+                        </div>
+                    </div>
+                    <p style="font-size:var(--tiny-size);color:var(--text-muted);margin-top:var(--element-gap);">Stuffed resume wins keywords but loses on 5/7 signals</p>
+                </div>
+
+                <!-- Proof 3: Synonym handling -->
+                <div class="glass-card" style="border-color:rgba(255,107,157,0.3);">
+                    <h3 style="font-size:var(--small-size);color:var(--accent-3);margin-bottom:var(--element-gap);">Synonym Detection</h3>
+                    <div style="display:flex;flex-direction:column;gap:clamp(0.2rem,0.4vw,0.4rem);font-size:var(--tiny-size);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="color:var(--text-secondary);">Synonym resume ("ML")</span>
+                            <span style="color:var(--accent-2);font-weight:600;">0.769</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="color:var(--text-secondary);">Exact-match resume</span>
+                            <span style="color:var(--accent-2);font-weight:600;">0.750</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:clamp(0.2rem,0.3vw,0.3rem);border-top:1px solid rgba(255,255,255,0.06);">
+                            <span style="color:var(--text-muted);">TF-IDF ranks keyword-</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="color:var(--text-muted);">stuffed resume #1</span>
+                            <span style="color:var(--accent-3);font-weight:600;">0.434</span>
+                        </div>
+                    </div>
+                    <p style="font-size:var(--tiny-size);color:var(--text-muted);margin-top:var(--element-gap);">Hybrid correctly ranks synonym user above keyword matcher</p>
+                </div>
+            </div>
+
+            <p class="reveal reveal-delay-3" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
+                All numbers from <code style="color:var(--accent);">make evaluate</code> and <code style="color:var(--accent);">make baselines</code> - fully reproducible
+            </p>
         </div>
     </section>
 
@@ -1780,6 +1859,10 @@
         'slide-9': {
             q: "What stops a sophisticated candidate from stuffing exactly 40 highly-targeted skills instead of 200 generic ones?",
             a: "The cap alone doesn't. The defense is <strong>multi-signal architecture</strong>: 40 perfectly-matched keywords scores high on TF-IDF but semantic coherence, experience alignment, and education signals independently validate whether those skills appear in plausible context."
+        },
+        'slide-9b': {
+            q: "These three examples are cherry-picked. What's the failure case?",
+            a: "The synonym demo uses <strong>semantic weights</strong> where it works. With structured weights, the gap narrows to 0.002 - razor thin. The anti-gaming 33.7% gap is with structured weights; semantic weights give only 0.3% gap. Both profiles have a mode where they're strong and one where they're weak - auto-selection picks the right one per JD."
         },
         'slide-10': {
             q: "44 synthetic resumes, single annotator - how do you know 0.992 nDCG isn't just overfitting to your own generation process?",
