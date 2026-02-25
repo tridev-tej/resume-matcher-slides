@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Matcher — Client Presentation</title>
+    <title>Resume Matcher - Client Presentation</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
 
     <style>
         /* ===========================================
-           THEME — Edit these to change the entire look
+           THEME - Edit these to change the entire look
            =========================================== */
         :root {
             --bg-primary: #06070d;
@@ -71,7 +71,7 @@
         }
 
         /* ===========================================
-           SLIDES — Each = exactly one viewport
+           SLIDES - Each = exactly one viewport
            =========================================== */
         .slide {
             width: 100vw;
@@ -690,9 +690,9 @@
             </div>
 
             <ul class="bullets reveal reveal-delay-3" style="margin-top:var(--content-gap);">
-                <li><strong style="color:var(--text-primary);">Inconsistent</strong> — different recruiters, different results for the same candidate</li>
-                <li><strong style="color:var(--text-primary);">Keyword tunnel vision</strong> — "ML" vs "Machine Learning" treated as different skills</li>
-                <li><strong style="color:var(--text-primary);">No explainability</strong> — recruiter can't tell <em>why</em> a candidate was ranked</li>
+                <li><strong style="color:var(--text-primary);">Inconsistent</strong> - different recruiters, different results for the same candidate</li>
+                <li><strong style="color:var(--text-primary);">Keyword tunnel vision</strong> - "ML" vs "Machine Learning" treated as different skills</li>
+                <li><strong style="color:var(--text-primary);">No explainability</strong> - recruiter can't tell <em>why</em> a candidate was ranked</li>
             </ul>
         </div>
     </section>
@@ -754,13 +754,13 @@
                 </div>
                 <div class="comparison-row reveal reveal-delay-5" style="border-color:var(--accent);background:rgba(124,92,252,0.05);border-radius:8px;padding-left:0.5rem;">
                     <span style="font-size:var(--small-size);font-weight:700;color:var(--accent);">Hybrid (Ours)</span>
-                    <span style="font-size:var(--small-size);color:var(--text-primary);">7 signals — each covers the others' blind spots</span>
+                    <span style="font-size:var(--small-size);color:var(--text-primary);">7 signals - each covers the others' blind spots</span>
                     <span class="tag">Best of all</span>
                 </div>
             </div>
 
             <p class="reveal reveal-delay-6" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
-                Ref: Iso et al., NAACL 2025 — primacy bias in LLM-based resume screening &nbsp;|&nbsp; ConFit v2, RecSys 2024 — domain-specific beats general LLMs
+                Ref: Iso et al., NAACL 2025 - primacy bias in LLM-based resume screening &nbsp;|&nbsp; ConFit v2, RecSys 2024 - domain-specific beats general LLMs
             </p>
         </div>
     </section>
@@ -776,23 +776,23 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--element-gap);margin-top:var(--content-gap);">
                 <div class="signal-card reveal reveal-delay-1">
                     <h4>1. Semantic Similarity</h4>
-                    <p>Sentence embeddings, cosine distance — catches synonyms and paraphrases</p>
+                    <p>Sentence embeddings, cosine distance - catches synonyms and paraphrases</p>
                 </div>
                 <div class="signal-card s2 reveal reveal-delay-2">
                     <h4>2. Skills Semantic</h4>
-                    <p>Embedding comparison of extracted skill lists — "React" ≈ "React.js"</p>
+                    <p>Embedding comparison of extracted skill lists - "React" ≈ "React.js"</p>
                 </div>
                 <div class="signal-card s3 reveal reveal-delay-2">
                     <h4>3. Skill Overlap</h4>
-                    <p>70% recall + 30% Jaccard blend — exact skill matching with coverage weighting</p>
+                    <p>70% recall + 30% Jaccard blend - exact skill matching with coverage weighting</p>
                 </div>
                 <div class="signal-card s4 reveal reveal-delay-3">
                     <h4>4. TF-IDF Keywords</h4>
-                    <p>Sublinear TF for anti-gaming — repeated keywords saturate quickly</p>
+                    <p>Sublinear TF for anti-gaming - repeated keywords saturate quickly</p>
                 </div>
                 <div class="signal-card reveal reveal-delay-3">
                     <h4>5. Title Match</h4>
-                    <p>Job title similarity via embeddings — "SWE" ≈ "Software Engineer"</p>
+                    <p>Job title similarity via embeddings - "SWE" ≈ "Software Engineer"</p>
                 </div>
                 <div class="signal-card s2 reveal reveal-delay-4">
                     <h4>6. Experience Match</h4>
@@ -800,7 +800,7 @@
                 </div>
                 <div class="signal-card s3 reveal reveal-delay-4" style="grid-column:span 2;">
                     <h4>7. Education Match</h4>
-                    <p>5-level ordinal scale (none → PhD). No penalty for exceeding requirement — higher degree is never a flight risk.</p>
+                    <p>5-level ordinal scale (none → PhD). No penalty for exceeding requirement - higher degree is never a flight risk.</p>
                 </div>
             </div>
         </div>
@@ -869,7 +869,7 @@
                         <div class="bar-row"><span class="bar-label">skills_sem</span><div class="bar-track"><div class="bar-fill" style="--bar-width:10%;background:var(--gradient-1);"></div></div><span class="bar-val">5%</span></div>
                         <div class="bar-row"><span class="bar-label">experience</span><div class="bar-track"><div class="bar-fill" style="--bar-width:10%;background:var(--gradient-1);"></div></div><span class="bar-val">5%</span></div>
                     </div>
-                    <p style="margin-top:var(--element-gap);font-size:var(--tiny-size);color:var(--text-muted);">Text-heavy — robust across domains</p>
+                    <p style="margin-top:var(--element-gap);font-size:var(--tiny-size);color:var(--text-muted);">Text-heavy - robust across domains</p>
                 </div>
 
                 <div class="glass-card" style="border-color:rgba(78,205,196,0.3);">
@@ -934,9 +934,9 @@
             <div class="two-col" style="margin-top:var(--content-gap);">
                 <div>
                     <ul class="bullets reveal reveal-delay-2">
-                        <li><strong style="color:var(--text-primary);">Skill cap at 40</strong> — 99th percentile of real resumes. Beyond this, extra skills are ignored</li>
-                        <li><strong style="color:var(--text-primary);">Sublinear TF-IDF</strong> — <code style="color:var(--accent);">sublinear_tf=True</code> means keyword repetition saturates quickly</li>
-                        <li><strong style="color:var(--text-primary);">Multi-signal defense</strong> — stuffed resume scores high on keywords but low on semantic, experience, education</li>
+                        <li><strong style="color:var(--text-primary);">Skill cap at 40</strong> - 99th percentile of real resumes. Beyond this, extra skills are ignored</li>
+                        <li><strong style="color:var(--text-primary);">Sublinear TF-IDF</strong> - <code style="color:var(--accent);">sublinear_tf=True</code> means keyword repetition saturates quickly</li>
+                        <li><strong style="color:var(--text-primary);">Multi-signal defense</strong> - stuffed resume scores high on keywords but low on semantic, experience, education</li>
                     </ul>
                 </div>
                 <div class="reveal reveal-delay-3">
@@ -1032,7 +1032,7 @@
                         <div class="bar-row"><span class="bar-label">Embedding Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:97.6%;background:rgba(124,92,252,0.15);"></div></div><span class="bar-val">0.976</span></div>
                         <div class="bar-row"><span class="bar-label">Structured Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:90.3%;background:rgba(124,92,252,0.1);"></div></div><span class="bar-val">0.903</span></div>
                     </div>
-                    <p style="font-size:clamp(0.55rem,0.9vw,0.75rem);color:var(--text-muted);margin-top:clamp(0.2rem,0.5vw,0.4rem);">Δ0.002 nDCG is within 95% CI [0.985, 0.998] — not statistically significant</p>
+                    <p style="font-size:clamp(0.55rem,0.9vw,0.75rem);color:var(--text-muted);margin-top:clamp(0.2rem,0.5vw,0.4rem);">Δ0.002 nDCG is within 95% CI [0.985, 0.998] - not statistically significant</p>
                 </div>
                 <div class="reveal reveal-delay-3">
                     <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);">Cross-Domain (300 real samples)</h3>
@@ -1048,7 +1048,7 @@
             </div>
 
             <p class="reveal reveal-delay-4" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
-                Accuracy parity with TF-IDF, but hybrid gives <strong style="color:var(--accent);">per-signal explainability</strong> — recruiters see <em>why</em>, not just a score.
+                Accuracy parity with TF-IDF, but hybrid gives <strong style="color:var(--accent);">per-signal explainability</strong> - recruiters see <em>why</em>, not just a score.
             </p>
         </div>
     </section>
@@ -1093,12 +1093,12 @@
                             <span class="metric-label">human-ranked pairs</span>
                         </div>
                     </div>
-                    <p style="font-size:clamp(0.55rem,0.9vw,0.75rem);color:var(--text-muted);margin-top:clamp(0.3rem,0.5vw,0.5rem);">Not just our synthetic data — validated against independent benchmarks with real-world resumes and human judgments</p>
+                    <p style="font-size:clamp(0.55rem,0.9vw,0.75rem);color:var(--text-muted);margin-top:clamp(0.3rem,0.5vw,0.5rem);">Not just our synthetic data - validated against independent benchmarks with real-world resumes and human judgments</p>
                 </div>
             </div>
 
             <p class="reveal reveal-delay-4" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
-                Positive correlation across all non-tech domains — no domain-specific tuning applied
+                Positive correlation across all non-tech domains - no domain-specific tuning applied
             </p>
         </div>
     </section>
@@ -1149,7 +1149,7 @@
                     <ul class="bullets reveal reveal-delay-2">
                         <li><strong style="color:var(--text-primary);">Gender inference</strong> from candidate names via gender-guesser library</li>
                         <li><strong style="color:var(--text-primary);">Four-fifths rule</strong> check on selection rates by group</li>
-                        <li><strong style="color:var(--text-primary);">Swap reranking</strong> when disparity detected — only swaps within 0.05 score difference</li>
+                        <li><strong style="color:var(--text-primary);">Swap reranking</strong> when disparity detected - only swaps within 0.05 score difference</li>
                         <li><strong style="color:var(--text-primary);">Every API response</strong> includes fairness metrics: group counts, selection rate ratio, delta exposure</li>
                     </ul>
                 </div>
@@ -1254,7 +1254,7 @@
             <h2 class="reveal reveal-delay-1">Production <span class="gradient-text">Roadmap</span></h2>
 
             <div class="grid-3 reveal reveal-delay-2" style="margin-top:var(--content-gap);">
-                <div class="phase-card p1" data-phase="Phase 1 — 4-6 wks">
+                <div class="phase-card p1" data-phase="Phase 1 - 4-6 wks">
                     <h3 style="font-size:var(--small-size);margin-top:var(--element-gap);margin-bottom:var(--element-gap);">Pilot</h3>
                     <ul class="bullets">
                         <li>Fine-tune bi-encoder on company data</li>
@@ -1263,7 +1263,7 @@
                         <li>GPU-enabled deployment</li>
                     </ul>
                 </div>
-                <div class="phase-card p2" data-phase="Phase 2 — 2-3 mo">
+                <div class="phase-card p2" data-phase="Phase 2 - 2-3 mo">
                     <h3 style="font-size:var(--small-size);margin-top:var(--element-gap);margin-bottom:var(--element-gap);">Scale</h3>
                     <ul class="bullets">
                         <li>Vector DB (FAISS/Qdrant) for 100K+ resumes</li>
@@ -1272,7 +1272,7 @@
                         <li>Recruiter feedback loop</li>
                     </ul>
                 </div>
-                <div class="phase-card p3" data-phase="Phase 3 — 3-6 mo">
+                <div class="phase-card p3" data-phase="Phase 3 - 3-6 mo">
                     <h3 style="font-size:var(--small-size);margin-top:var(--element-gap);margin-bottom:var(--element-gap);">Production-Grade</h3>
                     <ul class="bullets">
                         <li>Bias audit (NYC LL144 / EU AI Act)</li>
@@ -1297,17 +1297,17 @@
                 <div class="glass-card">
                     <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);color:var(--accent);">Quality Metrics</h3>
                     <ul class="bullets">
-                        <li><strong style="color:var(--text-primary);">nDCG drift</strong> — weekly regression check against holdout set</li>
-                        <li><strong style="color:var(--text-primary);">Recruiter correlation</strong> — accept/reject vs predicted scores</li>
-                        <li><strong style="color:var(--text-primary);">Fairness alerts</strong> — four-fifths rule violation triggers</li>
+                        <li><strong style="color:var(--text-primary);">nDCG drift</strong> - weekly regression check against holdout set</li>
+                        <li><strong style="color:var(--text-primary);">Recruiter correlation</strong> - accept/reject vs predicted scores</li>
+                        <li><strong style="color:var(--text-primary);">Fairness alerts</strong> - four-fifths rule violation triggers</li>
                     </ul>
                 </div>
                 <div class="glass-card">
                     <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);color:var(--accent-2);">Operational Metrics</h3>
                     <ul class="bullets">
-                        <li><strong style="color:var(--text-primary);">Latency p95</strong> — currently ~50ms/resume on CPU</li>
-                        <li><strong style="color:var(--text-primary);">Cost per match</strong> — LLM calls only for top-3 explain</li>
-                        <li><strong style="color:var(--text-primary);">Model loading</strong> — ~4s cold start, handled by startup warmup</li>
+                        <li><strong style="color:var(--text-primary);">Latency p95</strong> - currently ~50ms/resume on CPU</li>
+                        <li><strong style="color:var(--text-primary);">Cost per match</strong> - LLM calls only for top-3 explain</li>
+                        <li><strong style="color:var(--text-primary);">Model loading</strong> - ~4s cold start, handled by startup warmup</li>
                     </ul>
                 </div>
             </div>
@@ -1328,7 +1328,7 @@
                         <div class="win-icon">🔍</div>
                         <div>
                             <h3 style="font-size:var(--small-size);margin-bottom:0.2em;">Transparent</h3>
-                            <p style="font-size:var(--tiny-size);">Per-signal breakdown — not a black box. Recruiters see <em>why</em>.</p>
+                            <p style="font-size:var(--tiny-size);">Per-signal breakdown - not a black box. Recruiters see <em>why</em>.</p>
                         </div>
                     </div>
                 </div>
