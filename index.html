@@ -1019,36 +1019,64 @@
          ========================================== -->
     <section class="slide bg-gradient bg-grid" id="slide-11">
         <div class="slide-content">
-            <p class="section-label reveal">Baselines</p>
-            <h2 class="reveal reveal-delay-1">Same Accuracy, <span class="gradient-text">Better Insight</span></h2>
+            <p class="section-label reveal">Why Not Just TF-IDF?</p>
+            <h2 class="reveal reveal-delay-1">Ranking is <span class="gradient-text">Table Stakes</span></h2>
 
-            <div class="two-col" style="margin-top:var(--content-gap);">
-                <div class="reveal reveal-delay-2">
-                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);">Custom Dataset (64 pairs, 9 industries)</h3>
-                    <div class="bar-chart">
-                        <div class="bar-row"><span class="bar-label" style="color:var(--accent);">Hybrid (ours)</span><div class="bar-track"><div class="bar-fill" style="--bar-width:99.2%;background:var(--gradient-1);"></div></div><span class="bar-val" style="color:var(--accent);">0.992</span></div>
-                        <div class="bar-row"><span class="bar-label">TF-IDF Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:99.4%;background:rgba(124,92,252,0.3);"></div></div><span class="bar-val">0.994</span></div>
-                        <div class="bar-row"><span class="bar-label">Text Signals</span><div class="bar-track"><div class="bar-fill" style="--bar-width:98.4%;background:rgba(124,92,252,0.25);"></div></div><span class="bar-val">0.984</span></div>
-                        <div class="bar-row"><span class="bar-label">Embedding Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:97.6%;background:rgba(124,92,252,0.15);"></div></div><span class="bar-val">0.976</span></div>
-                        <div class="bar-row"><span class="bar-label">Structured Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:90.3%;background:rgba(124,92,252,0.1);"></div></div><span class="bar-val">0.903</span></div>
-                    </div>
-                    <p style="font-size:clamp(0.55rem,0.9vw,0.75rem);color:var(--text-muted);margin-top:clamp(0.2rem,0.5vw,0.4rem);">Δ0.002 nDCG is within 95% CI [0.985, 0.998] - not statistically significant</p>
-                </div>
-                <div class="reveal reveal-delay-3">
-                    <h3 style="font-size:var(--body-size);margin-bottom:var(--element-gap);">Cross-Domain (300 real samples)</h3>
-                    <div class="bar-chart">
-                        <div class="bar-row"><span class="bar-label">TF-IDF Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:59.3%;background:rgba(78,205,196,0.3);"></div></div><span class="bar-val">0.593</span></div>
-                        <div class="bar-row"><span class="bar-label" style="color:var(--accent);">Hybrid (ours)</span><div class="bar-track"><div class="bar-fill" style="--bar-width:57.5%;background:var(--gradient-3);"></div></div><span class="bar-val" style="color:var(--accent);">0.575</span></div>
-                        <div class="bar-row"><span class="bar-label">Embedding Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:47.1%;background:rgba(78,205,196,0.2);"></div></div><span class="bar-val">0.471</span></div>
-                        <div class="bar-row"><span class="bar-label">Skills Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:20.3%;background:rgba(78,205,196,0.15);"></div></div><span class="bar-val">0.203</span></div>
-                        <div class="bar-row"><span class="bar-label">Structured Only</span><div class="bar-track"><div class="bar-fill" style="--bar-width:5.4%;background:rgba(78,205,196,0.1);"></div></div><span class="bar-val">0.054</span></div>
-                    </div>
-                    <p style="font-size:clamp(0.55rem,0.9vw,0.75rem);color:var(--text-muted);margin-top:clamp(0.2rem,0.5vw,0.4rem);">Hybrid tracks TF-IDF within Δ0.018 on real-world diverse data</p>
-                </div>
+            <p class="reveal reveal-delay-1" style="font-size:var(--body-size);color:var(--text-muted);text-align:center;margin-bottom:var(--content-gap);">
+                TF-IDF ranks well. So does hybrid. The question is: <strong style="color:var(--text-primary);">what else does your system tell you?</strong>
+            </p>
+
+            <div class="reveal reveal-delay-2" style="width:100%;max-width:900px;margin:0 auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:var(--body-size);">
+                    <thead>
+                        <tr style="border-bottom:2px solid rgba(124,92,252,0.4);">
+                            <th style="text-align:left;padding:clamp(0.3rem,0.8vw,0.6rem);color:var(--text-muted);font-weight:500;">Capability</th>
+                            <th style="text-align:center;padding:clamp(0.3rem,0.8vw,0.6rem);color:var(--text-muted);font-weight:500;">TF-IDF</th>
+                            <th style="text-align:center;padding:clamp(0.3rem,0.8vw,0.6rem);color:var(--accent);font-weight:600;">Hybrid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.3rem,0.7vw,0.55rem);">Ranking accuracy (nDCG@10)</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">0.994</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">0.992</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.3rem,0.7vw,0.55rem);">Explains <em>why</em> a candidate ranked</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#ff6b6b;">No</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">7 signal breakdown</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.3rem,0.7vw,0.55rem);">Catches synonyms ("ML" = "Machine Learning")</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#ff6b6b;">No</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">Embeddings</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.3rem,0.7vw,0.55rem);">Detects keyword stuffing</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#ff6b6b;">Easily gamed</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">Multi-signal defense</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.3rem,0.7vw,0.55rem);">Validates experience & education</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#ff6b6b;">No</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">Structured signals</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <td style="padding:clamp(0.3rem,0.7vw,0.55rem);">Fairness monitoring & reranking</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#ff6b6b;">No</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">Built-in</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:clamp(0.3rem,0.7vw,0.55rem);">Learns from recruiter feedback</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#ff6b6b;">Fixed</td>
+                            <td style="text-align:center;padding:clamp(0.3rem,0.7vw,0.55rem);color:#4ecdc4;">Weight learning pipeline</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <p class="reveal reveal-delay-4" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
-                Accuracy parity with TF-IDF, but hybrid gives <strong style="color:var(--accent);">per-signal explainability</strong> - recruiters see <em>why</em>, not just a score.
+            <p class="reveal reveal-delay-3" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-muted);text-align:center;">
+                Both rank equally well. But only one tells a recruiter: <strong style="color:var(--accent);">"skills match is 0.9 but experience is 0.3 - that's why they're #4"</strong>
             </p>
         </div>
     </section>
